@@ -68,9 +68,15 @@ uint8_t RC_Channels::get_radio_in(uint16_t *chans, const uint8_t num_channels)
 // update all the input channels
 bool RC_Channels::read_input(void)
 {
+
+    // check if an aux channel has been set to RC_OVERRIDE_ENABLE
+    RC_Channel *override_enable_ch = rc().find_channel_for_option(RC_Channel::AUX_FUNC::RC_OVERRIDE_ENABLE);
+
     if (hal.rcin->new_input()) {
         _has_had_rc_receiver = true;
-    } else if (!has_new_overrides) {
+    // ignore new overrides if a channel is set to RC_OVERRIDE_ENABLE,
+    // since that channel cannot be read if there was no new rc input
+    } else if (!has_new_overrides || (override_enable_ch != nullptr)) {
         return false;
     }
 
