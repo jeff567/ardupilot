@@ -187,8 +187,12 @@ float AP_RSSI::read_pin_rssi()
 // read the RSSI value from a PWM value on a RC channel
 float AP_RSSI::read_channel_rssi()
 {
+
+    // true if an rc input was received recently (does not consider rc overrides)
+    bool recent_rc_receiver_input = rc().get_fs_timeout_ms() > (AP_HAL::millis() - rc().last_rc_receiver_input_ms());
+
     RC_Channel *c = rc().channel(rssi_channel-1);
-    if (c == nullptr) {
+    if (c == nullptr || !recent_rc_receiver_input) {
         return 0.0f;
     }
     uint16_t rssi_channel_value = c->get_radio_in();

@@ -70,6 +70,7 @@ bool RC_Channels::read_input(void)
 {
     if (hal.rcin->new_input()) {
         _has_had_rc_receiver = true;
+        _last_rc_receiver_input_ms = AP_HAL::millis();
     } else if (!has_new_overrides) {
         return false;
     }
